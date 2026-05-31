@@ -1,12 +1,27 @@
 'use client'
 import { useRef, useEffect } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import { motion, useInView, useReducedMotion } from 'motion/react'
 import gsap from 'gsap'
 import FloatingIcons from './FloatingIcons'
 
+/* ---- Shared blur-word keyframes & transition ---- */
+const BLUR_FROM = { filter: 'blur(10px)', opacity: 0, y: -50 }
+const BLUR_TO = {
+  filter: ['blur(10px)', 'blur(5px)', 'blur(0px)'],
+  opacity: [0, 0.5, 1],
+  y: [-50, 5, 0],
+}
+const BLUR_TRANSITION = {
+  duration: 0.7,
+  times: [0, 0.5, 1],
+  ease: [0.25, 0.46, 0.45, 0.94],
+}
+
 export default function Hero() {
   const glowRef = useRef<HTMLDivElement>(null)
+  const headlineRef = useRef<HTMLHeadingElement>(null)
   const prefersReduced = useReducedMotion()
+  const headlineInView = useInView(headlineRef, { once: true, amount: 0.3 })
 
   /* ---- GSAP glow pulse ---- */
   useEffect(() => {
@@ -23,6 +38,25 @@ export default function Hero() {
 
     return () => pulse.kill()
   }, [prefersReduced])
+
+  /* ---- Helper: renders a blur-animated word ---- */
+  const BlurWord = ({ children, delay }: { children: React.ReactNode; delay: number }) => {
+    if (prefersReduced) {
+      return <span className="blur-word">{children}</span>
+    }
+
+    return (
+      <motion.span
+        className="blur-word"
+        initial={BLUR_FROM}
+        animate={headlineInView ? BLUR_TO : BLUR_FROM}
+        transition={{ ...BLUR_TRANSITION, delay }}
+      >
+        {children}
+      </motion.span>
+    )
+  }
+
   return (
     <section
       style={{
@@ -90,9 +124,7 @@ export default function Hero() {
         }}
       >
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, stiffness: 120, damping: 20, type: 'spring' }}
+          ref={headlineRef}
           style={{
             fontFamily: 'Satoshi, Geist, sans-serif',
             fontWeight: 700,
@@ -103,19 +135,27 @@ export default function Hero() {
             margin: '0 0 72px',
           }}
         >
-          Powerful Models.
+          <span style={{ display: 'inline-block' }}>
+            <BlurWord delay={0}>Powerful</BlurWord>
+            {' '}
+            <BlurWord delay={0.2}>Models.</BlurWord>
+          </span>
           <br />
           <span
             style={{
+              display: 'inline-block',
               background: 'linear-gradient(135deg, #C4B5FD, #A78BFA, #9333EA)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}
           >
-            Crazy Cheap
-          </span>{' '}
-          Pricing.
+            <BlurWord delay={0.4}>Crazy</BlurWord>
+            {' '}
+            <BlurWord delay={0.6}>Cheap</BlurWord>
+          </span>
+          {' '}
+          <BlurWord delay={0.8}>Pricing.</BlurWord>
         </motion.h1>
 
         <motion.p
@@ -195,6 +235,13 @@ export default function Hero() {
           </a>
         </motion.div>
       </div>
+
+      <style>{`
+        .blur-word {
+          display: inline-block;
+          will-change: transform, filter, opacity;
+        }
+      `}</style>
     </section>
   )
 }
