@@ -6,14 +6,9 @@ import FloatingIcons from './FloatingIcons'
 
 /* ---- Shared blur-word keyframes & transition ---- */
 const BLUR_FROM = { filter: 'blur(10px)', opacity: 0, y: -50 }
-const BLUR_TO = {
-  filter: ['blur(10px)', 'blur(5px)', 'blur(0px)'],
-  opacity: [0, 0.5, 1],
-  y: [-50, 5, 0],
-}
+const BLUR_TARGET = { filter: 'blur(0px)', opacity: 1, y: 0 }
 const BLUR_TRANSITION = {
   duration: 0.7,
-  times: [0, 0.5, 1],
   ease: [0.25, 0.46, 0.45, 0.94],
 }
 
@@ -37,7 +32,7 @@ function BlurWord({
     <motion.span
       className="blur-word"
       initial={BLUR_FROM}
-      animate={inView ? BLUR_TO : BLUR_FROM}
+      animate={inView ? BLUR_TARGET : BLUR_FROM}
       transition={{ ...BLUR_TRANSITION, delay }}
     >
       {children}
@@ -155,6 +150,8 @@ export default function Hero() {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
             }}
           >
             <BlurWord delay={0.4} inView={headlineInView} reduced={prefersReduced}>Crazy</BlurWord>
@@ -247,6 +244,7 @@ export default function Hero() {
         .blur-word {
           display: inline-block;
           will-change: transform, filter, opacity;
+          backface-visibility: hidden;
         }
       `}</style>
     </section>
