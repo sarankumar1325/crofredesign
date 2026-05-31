@@ -13,19 +13,34 @@ const BLUR_TRANSITION = {
 }
 
 /* ---- BlurWord sub-component (defined outside parent to avoid remounts) ---- */
+const GRADIENT = {
+  background: 'linear-gradient(135deg, #C4B5FD, #A78BFA, #9333EA)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+} as const
+
 function BlurWord({
   children,
   delay,
   inView,
   reduced,
+  gradient,
 }: {
   children: React.ReactNode
   delay: number
   inView: boolean
   reduced: boolean
+  gradient?: boolean
 }) {
+  const word = gradient ? (
+    <span style={GRADIENT as React.CSSProperties}>{children}</span>
+  ) : (
+    children
+  )
+
   if (reduced) {
-    return <span className="blur-word">{children}</span>
+    return <span className="blur-word">{word}</span>
   }
 
   return (
@@ -35,7 +50,7 @@ function BlurWord({
       animate={inView ? BLUR_TARGET : BLUR_FROM}
       transition={{ ...BLUR_TRANSITION, delay }}
     >
-      {children}
+      {word}
     </motion.span>
   )
 }
@@ -144,20 +159,9 @@ export default function Hero() {
           {' '}
           <BlurWord delay={0.2} inView={headlineInView} reduced={prefersReduced}>Models.</BlurWord>
           <br />
-          <span
-            style={{
-              background: 'linear-gradient(135deg, #C4B5FD, #A78BFA, #9333EA)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden',
-            }}
-          >
-            <BlurWord delay={0.4} inView={headlineInView} reduced={prefersReduced}>Crazy</BlurWord>
-            {' '}
-            <BlurWord delay={0.6} inView={headlineInView} reduced={prefersReduced}>Cheap</BlurWord>
-          </span>
+          <BlurWord delay={0.4} inView={headlineInView} reduced={prefersReduced} gradient>Crazy</BlurWord>
+          {' '}
+          <BlurWord delay={0.6} inView={headlineInView} reduced={prefersReduced} gradient>Cheap</BlurWord>
           {' '}
           <BlurWord delay={0.8} inView={headlineInView} reduced={prefersReduced}>Pricing.</BlurWord>
         </motion.h1>
