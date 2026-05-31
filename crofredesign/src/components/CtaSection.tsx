@@ -1,8 +1,45 @@
-import { motion } from 'motion/react'
+'use client'
+import { useEffect, useRef } from 'react'
+import { useReducedMotion } from 'motion/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function CtaSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const hRef = useRef<HTMLHeadingElement>(null)
+  const pRef = useRef<HTMLParagraphElement>(null)
+  const btnRef = useRef<HTMLDivElement>(null)
+  const prefersReduced = useReducedMotion()
+
+  useEffect(() => {
+    if (prefersReduced) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      })
+
+      tl.from([hRef.current, pRef.current, btnRef.current], {
+        clipPath: 'inset(0 100% 0 0)',
+        opacity: 0,
+        duration: 1.4,
+        stagger: 0.4,
+        ease: 'power3.out',
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [prefersReduced])
+
   return (
     <section
+      ref={sectionRef}
       style={{
         background: '#08080F radial-gradient(circle at center, rgba(139,92,246,0.35) 0%, rgba(99,102,241,0.20) 35%, rgba(15,23,42,0.05) 70%, transparent 100%)',
         padding: '128px 24px',
@@ -12,11 +49,8 @@ export default function CtaSection() {
       }}
     >
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '640px', margin: '0 auto' }}>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true, amount: 0.3 }}
+        <h2
+          ref={hRef}
           style={{
             fontFamily: 'Satoshi, Geist, sans-serif',
             fontWeight: 600,
@@ -27,13 +61,10 @@ export default function CtaSection() {
           }}
         >
           Ready to build?
-        </motion.h2>
+        </h2>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          viewport={{ once: true, amount: 0.3 }}
+        <p
+          ref={pRef}
           style={{
             fontFamily: 'DM Sans, sans-serif',
             fontSize: '1.0625rem',
@@ -43,14 +74,9 @@ export default function CtaSection() {
           }}
         >
           Free account. First call in minutes. No credit card required.
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          viewport={{ once: true, amount: 0.3 }}
-        >
+        <div ref={btnRef}>
           <a
             href="#"
             style={{
@@ -76,7 +102,7 @@ export default function CtaSection() {
           >
             Get Started
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   )
