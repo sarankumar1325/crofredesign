@@ -76,24 +76,27 @@ export default function Hero() {
             fontWeight: 700,
             fontSize: 'clamp(3.2rem, 7.5vw, 6.8rem)',
             letterSpacing: '-0.04em',
-            lineHeight: 0.94,
+            lineHeight: 0.9,
             color: '#F5F3FF',
-            margin: '0 0 28px',
+            margin: '0 0 6px',
           }}
         >
           Powerful Models.
           <br />
-          <span
-            style={{
-              background: 'linear-gradient(135deg, #C4B5FD, #A78BFA, #9333EA)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            Crazy Cheap
-          </span>{' '}
-          Pricing.
+          <span style={{ display: 'inline-block', marginTop: '-0.16em' }}>
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #C4B5FD, #A78BFA, #9333EA)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Crazy Cheap
+            </span>
+          </span>
+          <br />
+          <span style={{ display: 'inline-block', marginTop: '0.03em' }}>Pricing.</span>
         </motion.h1>
 
         <motion.p

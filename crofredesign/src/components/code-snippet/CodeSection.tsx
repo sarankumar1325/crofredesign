@@ -14,31 +14,30 @@ export default function CodeSection() {
     >
       <div
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '64px',
+          gridTemplateColumns: '1fr 1.15fr',
+          gap: '48px',
           alignItems: 'center',
         }}
         className="code-grid"
       >
-        {/* Left column */}
+        {/* Left column — text */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          viewport={{ once: true, amount: 0.3 }}
         >
           <p
             style={{
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: '10px',
               textTransform: 'uppercase',
-              letterSpacing: '0.22em',
+              letterSpacing: '0.2em',
               color: '#7C3AED',
-              marginBottom: '20px',
-              margin: '0 0 20px',
+              margin: '0 0 14px',
             }}
           >
             MINUTES TO YOUR FIRST CALL
@@ -46,22 +45,25 @@ export default function CodeSection() {
           <h2
             style={{
               fontFamily: 'Satoshi, Geist, sans-serif',
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: 'clamp(1.8rem, 3vw, 2.6rem)',
               color: '#F5F3FF',
-              margin: '0 0 20px',
-              lineHeight: 1.1,
+              margin: '0 0 14px',
+              lineHeight: 1.15,
+              letterSpacing: '-0.03em',
             }}
           >
-            Drop in. Start shipping.
+            Drop in.
+            <br />
+            Start shipping.
           </h2>
           <p
             style={{
               fontFamily: 'DM Sans, sans-serif',
-              fontSize: '1rem',
+              fontSize: '0.9375rem',
               color: '#8B8FA8',
-              lineHeight: 1.6,
-              maxWidth: '60ch',
+              lineHeight: 1.65,
+              maxWidth: '48ch',
               margin: 0,
             }}
           >
@@ -69,21 +71,22 @@ export default function CodeSection() {
           </p>
         </motion.div>
 
-        {/* Right column - Terminal */}
+        {/* Right column — Code editor */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+          viewport={{ once: true, amount: 0.3 }}
         >
           <CodeTabs />
         </motion.div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .code-grid {
             grid-template-columns: 1fr !important;
+            gap: 40px !important;
           }
         }
       `}</style>
