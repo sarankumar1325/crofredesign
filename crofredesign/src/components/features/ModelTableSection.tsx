@@ -1,9 +1,10 @@
 import { motion } from 'motion/react'
-import FeatureGrid from './FeatureGrid'
+import ModelTable from './ModelTable'
 
-export default function BentoGrid() {
+export default function ModelTableSection() {
   return (
     <section
+      id="models"
       style={{
         backgroundColor: '#08080F',
         padding: '96px 24px',
@@ -24,10 +25,10 @@ export default function BentoGrid() {
             textAlign: 'left',
           }}
         >
-          Everything you need to ship fast.
+          All models. One API.
         </motion.h2>
 
-        <FeatureGrid />
+        <ModelTable />
       </div>
     </section>
   )

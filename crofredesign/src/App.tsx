@@ -1,7 +1,7 @@
 import Nav from './components/nav/Nav'
 import Hero from './components/hero/Hero'
 import CodeSection from './components/code-snippet/CodeSection'
-import BentoGrid from './components/features/BentoGrid'
+import ModelTableSection from './components/features/ModelTableSection'
 import PricingSection from './components/pricing/PricingSection'
 import CtaSection from './components/CtaSection'
 import Footer from './components/Footer'
@@ -12,7 +12,7 @@ export default function App() {
       <Nav />
       <Hero />
       <CodeSection />
-      <BentoGrid />
+      <ModelTableSection />
       <PricingSection />
       <CtaSection />
       <Footer />

@@ -91,7 +91,7 @@ export default function ModelCard({ model }: { model: Model }) {
             fontFamily: '"JetBrains Mono", monospace',
           }}
         >
-          {model.context}
+          {model.contextMax}
         </span>
         {model.badges.map((badge) => (
           <span
@@ -158,7 +158,7 @@ export default function ModelCard({ model }: { model: Model }) {
           {model.speed}
         </span>
         <span style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '11px', color: '#8B8FA8' }}>
-          {model.maxOutput}
+          {model.contextMax.split(' / ')[1]}
         </span>
       </div>
     </motion.div>

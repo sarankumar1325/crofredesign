@@ -1,36 +1,49 @@
-import type { ReactElement } from 'react'
+import type { ReactNode, ComponentType } from 'react'
 import type { Model } from './models-data'
+import DeepSeek from '@lobehub/icons/es/DeepSeek'
+import Qwen from '@lobehub/icons/es/Qwen'
+import Kimi from '@lobehub/icons/es/Kimi'
+import Gemma from '@lobehub/icons/es/Gemma'
+import Minimax from '@lobehub/icons/es/Minimax'
+import ZAI from '@lobehub/icons/es/ZAI'
 
-const labColors: Record<Model['lab'], string> = {
-  deepseek: 'rgba(0,180,216,0.15)',
-  kimi: 'rgba(232,121,249,0.15)',
-  qwen: 'rgba(249,115,22,0.15)',
-  glm: 'rgba(16,185,129,0.15)',
-  gemma: 'rgba(66,133,244,0.15)',
-  others: 'rgba(167,139,250,0.15)',
+/* ------------------------------------------------------------------ */
+/*  Lab icon config — Color variant where available, fallback for rest */
+/* ------------------------------------------------------------------ */
+
+interface LabEntry {
+  bg: string
+  icon: ComponentType<{ size?: number }> | null
+  fallback?: ReactNode
 }
 
-// Monogram SVGs for labs without Simple Icons
-const monograms: Partial<Record<Model['lab'], ReactElement>> = {
-  glm: (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="2" y="15" fontFamily="sans-serif" fontWeight="800" fontSize="13" fill="white">GL</text>
+const labConfig: Record<Model['lab'], LabEntry> = {
+  deepseek: { bg: '#08080F', icon: DeepSeek.Color },
+  greg: { bg: '#08080F', icon: Kimi.Color },
+  mimo: { bg: '#08080F', icon: null, fallback: (
+    <svg fill="#FFFFFF" role="img" viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C8.016 0 4.756.255 2.493 2.516.23 4.776 0 8.033 0 12.012c0 3.98.23 7.235 2.494 9.497C4.757 23.77 8.017 24 12 24c3.983 0 7.243-.23 9.506-2.491C23.77 19.247 24 15.99 24 12.012c0-3.984-.233-7.243-2.502-9.504C19.234.252 15.978 0 12 0zM4.906 7.405h5.624c1.47 0 3.007.068 3.764.827.746.746.827 2.233.83 3.676v4.54a.15.15 0 0 1-.152.147h-1.947a.15.15 0 0 1-.152-.148V11.83c-.002-.806-.048-1.634-.464-2.051-.358-.36-1.026-.441-1.72-.458H7.158a.15.15 0 0 0-.151.147v6.98a.15.15 0 0 1-.152.148H4.906a.15.15 0 0 1-.15-.148V7.554a.15.15 0 0 1 .15-.149zm12.131 0h1.949a.15.15 0 0 1 .15.15v8.892a.15.15 0 0 1-.15.148h-1.949a.15.15 0 0 1-.151-.148V7.554a.15.15 0 0 1 .151-.149zM8.92 10.948h2.046c.083 0 .15.066.15.147v5.352a.15.15 0 0 1-.15.148H8.92a.15.15 0 0 1-.152-.148v-5.352a.15.15 0 0 1 .152-.147Z" />
     </svg>
-  ),
-  others: (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="4" fill="white" opacity="0.9"/>
-      <circle cx="10" cy="10" r="7" stroke="white" strokeWidth="1.5" opacity="0.5"/>
-    </svg>
-  ),
+  ) },
+  glm: { bg: '#08080F', icon: ZAI },
+  kimi: { bg: '#08080F', icon: Kimi.Color },
+  gemma: { bg: '#08080F', icon: Gemma.Color },
+  minimax: { bg: '#08080F', icon: Minimax.Color },
+  qwen: { bg: '#08080F', icon: Qwen.Color },
 }
 
-// CDN logos for labs with Simple Icons entries
-const cdnSlugs: Partial<Record<Model['lab'], string>> = {
-  deepseek: 'deepseek',
-  qwen: 'alibabacloud',
-  kimi: 'moonbitlang',
-  gemma: 'google',
+/* ------------------------------------------------------------------ */
+/*  Container (shared by all labs)                                     */
+/* ------------------------------------------------------------------ */
+
+const containerStyle: Record<string, string | number> = {
+  width: '28px',
+  height: '28px',
+  borderRadius: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: '0',
 }
 
 interface Props {
@@ -38,71 +51,20 @@ interface Props {
   modelId: string
 }
 
-function getLabDisplayName(lab: Model['lab'], modelId: string): string {
-  if (lab === 'others') {
-    if (modelId.startsWith('minimax')) return 'M'
-    if (modelId.startsWith('mimo')) return 'Mo'
-    if (modelId.startsWith('greg')) return 'G'
-  }
-  return lab.charAt(0).toUpperCase()
-}
-
-export default function LabLogo({ lab, modelId }: Props) {
-  const bg = labColors[lab]
-  const cdnSlug = cdnSlugs[lab]
-  const monogram = monograms[lab]
-
-  let logoContent: ReactElement
-
-  if (cdnSlug) {
-    logoContent = (
-      <img
-        src={`https://cdn.simpleicons.org/${cdnSlug}/ffffff`}
-        alt={lab}
-        width="20"
-        height="20"
-        style={{ objectFit: 'contain' }}
-        onError={e => {
-          const target = e.currentTarget as HTMLImageElement
-          target.style.display = 'none'
-          const parent = target.parentElement
-          if (parent) {
-            const span = document.createElement('span')
-            span.textContent = lab.charAt(0).toUpperCase()
-            span.style.color = 'white'
-            span.style.fontWeight = '700'
-            span.style.fontSize = '11px'
-            span.style.fontFamily = 'DM Sans, sans-serif'
-            parent.appendChild(span)
-          }
-        }}
-      />
-    )
-  } else if (monogram) {
-    logoContent = monogram
-  } else {
-    const letter = lab === 'others' ? getLabDisplayName(lab, modelId) : lab.charAt(0).toUpperCase()
-    logoContent = (
-      <span style={{ color: 'white', fontWeight: 700, fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
-        {letter}
-      </span>
-    )
-  }
+export default function LabLogo({ lab }: Props) {
+  const entry = labConfig[lab]
 
   return (
-    <div
-      style={{
-        width: '28px',
-        height: '28px',
-        borderRadius: '8px',
-        backgroundColor: bg,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      {logoContent}
+    <div style={{ ...containerStyle, backgroundColor: entry.bg }}>
+      {entry.icon ? (
+        <entry.icon size={18} />
+      ) : (
+        entry.fallback ?? (
+          <span style={{ color: 'white', fontWeight: 700, fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
+            {lab.charAt(0).toUpperCase()}
+          </span>
+        )
+      )}
     </div>
   )
 }

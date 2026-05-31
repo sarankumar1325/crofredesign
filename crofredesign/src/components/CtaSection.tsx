@@ -4,27 +4,13 @@ export default function CtaSection() {
   return (
     <section
       style={{
-        backgroundColor: '#0F0F1A',
+        background: '#08080F radial-gradient(circle at center, rgba(139,92,246,0.35) 0%, rgba(99,102,241,0.20) 35%, rgba(15,23,42,0.05) 70%, transparent 100%)',
         padding: '128px 24px',
         position: 'relative',
         overflow: 'hidden',
         textAlign: 'center',
       }}
     >
-      {/* Radial glow */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '600px',
-          height: '400px',
-          background: 'radial-gradient(ellipse, rgba(124,58,237,0.18), transparent)',
-          pointerEvents: 'none',
-        }}
-      />
-
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '640px', margin: '0 auto' }}>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
