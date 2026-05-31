@@ -1,8 +1,28 @@
 'use client'
-import { motion } from 'motion/react'
+import { useRef, useEffect } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
+import gsap from 'gsap'
 import FloatingIcons from './FloatingIcons'
 
 export default function Hero() {
+  const glowRef = useRef<HTMLDivElement>(null)
+  const prefersReduced = useReducedMotion()
+
+  /* ---- GSAP glow pulse ---- */
+  useEffect(() => {
+    if (prefersReduced || !glowRef.current) return
+
+    const pulse = gsap.to(glowRef.current, {
+      scale: 1.06,
+      opacity: 0.65,
+      duration: 3.2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    })
+
+    return () => pulse.kill()
+  }, [prefersReduced])
   return (
     <section
       style={{
@@ -39,13 +59,15 @@ export default function Hero() {
         }}
       />
 
-      {/* Radial purple glow behind headline */}
+      {/* Radial purple glow behind headline — GSAP pulse */}
       <div
+        ref={glowRef}
         style={{
           position: 'absolute',
           left: '50%',
           top: '50%',
           transform: 'translate(-50%, -50%)',
+          transformOrigin: 'center center',
           width: '700px',
           height: '450px',
           background: 'radial-gradient(ellipse, rgba(124,58,237,0.13), transparent 70%)',

@@ -1,6 +1,8 @@
 'use client'
+import { useEffect, useRef, useCallback } from 'react'
 import type { CSSProperties, ComponentType } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import { useReducedMotion } from 'motion/react'
+import gsap from 'gsap'
 import DeepSeek from '@lobehub/icons/es/DeepSeek'
 import Qwen from '@lobehub/icons/es/Qwen'
 import Kimi from '@lobehub/icons/es/Kimi'
@@ -9,7 +11,6 @@ import Minimax from '@lobehub/icons/es/Minimax'
 import ZAI from '@lobehub/icons/es/ZAI'
 
 // 3 left, 3 right — scattered at different depths/offsets, each with a unique tilt
-// Rotations: slight, varied, never uniform — gives the organic "tossed on table" feel
 const labs: Array<{
   name: string
   Icon: ComponentType<{ size?: number }>
@@ -19,14 +20,13 @@ const labs: Array<{
   style: CSSProperties
   isMono?: boolean
 }> = [
-  // LEFT SIDE — scattered across vertical range
+  // LEFT SIDE
   {
     name: 'DeepSeek',
     Icon: DeepSeek.Color,
     duration: 6.2,
     floatOffset: [-10, 7],
     rotate: -8,
-    // upper-left, pushed in more from edge
     style: { top: '16%', left: '7%' },
   },
   {
@@ -35,7 +35,6 @@ const labs: Array<{
     duration: 8.8,
     floatOffset: [-6, 10],
     rotate: 6,
-    // mid-left, offset closer to edge for variety
     style: { top: '48%', left: '3%' },
   },
   {
@@ -44,18 +43,16 @@ const labs: Array<{
     duration: 7.1,
     floatOffset: [-12, 5],
     rotate: -4,
-    // lower-left, slightly inset
     style: { bottom: '16%', left: '8%' },
   },
 
-  // RIGHT SIDE — staggered, not aligned in a perfect column
+  // RIGHT SIDE
   {
     name: 'Kimi',
     Icon: Kimi.Color,
     duration: 7.4,
     floatOffset: [-8, 9],
     rotate: 7,
-    // upper-right, tight to edge
     style: { top: '13%', right: '4%' },
   },
   {
@@ -72,7 +69,6 @@ const labs: Array<{
     duration: 6.8,
     floatOffset: [-9, 6],
     rotate: 5,
-    // lower-right
     style: { bottom: '18%', right: '4%' },
     isMono: true,
   },
@@ -80,6 +76,63 @@ const labs: Array<{
 
 export default function FloatingIcons() {
   const prefersReduced = useReducedMotion()
+  const iconRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  const setIconRef = useCallback(
+    (index: number) => (el: HTMLDivElement | null) => {
+      iconRefs.current[index] = el
+    },
+    [],
+  )
+
+  /* ---- GSAP continuous float (y-axis) ---- */
+  useEffect(() => {
+    if (prefersReduced) return
+
+    const anims = labs.map((lab, i) => {
+      const el = iconRefs.current[i]
+      if (!el) return null
+
+      gsap.set(el, { y: lab.floatOffset[0] })
+
+      return gsap.to(el, {
+        y: lab.floatOffset[1],
+        duration: lab.duration,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      })
+    })
+
+    return () => anims.forEach((a) => a?.kill())
+  }, [prefersReduced])
+
+  /* ---- GSAP mouse parallax (x-axis) ---- */
+  useEffect(() => {
+    if (prefersReduced) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const cx = (e.clientX / window.innerWidth - 0.5) * 2 // -1 → 1
+      const cy = (e.clientY / window.innerHeight - 0.5) * 2
+
+      labs.forEach((_lab, i) => {
+        const el = iconRefs.current[i]
+        if (!el) return
+        const depth = 0.35 + (i % 3) * 0.2
+
+        gsap.to(el, {
+          x: cx * 12 * depth,
+          y: cy * 6 * depth,
+          duration: 1.5,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        })
+      })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [prefersReduced])
 
   return (
     <div
@@ -90,9 +143,11 @@ export default function FloatingIcons() {
         overflow: 'hidden',
       }}
     >
-      {labs.map((lab) => (
-        <motion.div
+      {labs.map((lab, i) => (
+        <div
           key={lab.name}
+          ref={setIconRef(i)}
+          className="floating-icon"
           style={{
             position: 'absolute',
             ...lab.style,
@@ -107,24 +162,8 @@ export default function FloatingIcons() {
             justifyContent: 'center',
             cursor: 'pointer',
             pointerEvents: 'all',
-            // Static rotation baked in — gives the natural "dropped" feel
             rotate: `${lab.rotate}deg`,
-          }}
-          animate={
-            prefersReduced
-              ? {}
-              : { y: [lab.floatOffset[0], lab.floatOffset[1], lab.floatOffset[0]] }
-          }
-          transition={
-            prefersReduced
-              ? {}
-              : { duration: lab.duration, repeat: Infinity, ease: 'easeInOut' }
-          }
-          whileHover={{
-            scale: 1.08,
-            rotate: 0,
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 20px 64px rgba(124,58,237,0.32)',
-            borderColor: 'rgba(167,139,250,0.22)',
+            willChange: 'transform',
           }}
         >
           {lab.isMono ? (
@@ -144,8 +183,22 @@ export default function FloatingIcons() {
           ) : (
             <lab.Icon size={52} />
           )}
-        </motion.div>
+        </div>
       ))}
+
+      {/* Hover styles via CSS to avoid conflicting with GSAP transforms */}
+      <style>{`
+        .floating-icon {
+          transition: scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                      box-shadow 0.25s ease,
+                      border-color 0.25s ease;
+        }
+        .floating-icon:hover {
+          scale: 1.08;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 20px 64px rgba(124,58,237,0.32);
+          border-color: rgba(167,139,250,0.22);
+        }
+      `}</style>
     </div>
   )
 }
