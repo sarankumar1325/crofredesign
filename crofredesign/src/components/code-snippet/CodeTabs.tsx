@@ -14,7 +14,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="deepseek/deepseek-v3",
+    model="greg/greg-alpha-v2",
     messages=[{"role": "user", "content": "Hello!"}]
 )`
 
@@ -26,7 +26,7 @@ const client = new OpenAI({
 })
 
 const response = await client.chat.completions.create({
-  model: "deepseek/deepseek-v3",
+  model: "greg/greg-alpha-v2",
   messages: [{role: "user", content: "Hello!"}],
 })`
 
@@ -154,20 +154,20 @@ function getTypingDelay(code: string, index: number): number {
 
   // Pause before a blank line (logical section break)
   if (char === '\n' && code[index + 1] === '\n') {
-    return 380
+    return 180
   }
 
   // End of line
   if (char === '\n') {
-    return 100
+    return 50
   }
 
   // First character after a blank line (new section begins)
   if (index >= 2 && code[index - 1] === '\n' && code[index - 2] === '\n') {
-    return 100
+    return 50
   }
 
-  return 30
+  return 15
 }
 
 /* ------------------------------------------------------------------ */
