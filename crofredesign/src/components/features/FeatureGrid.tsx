@@ -18,7 +18,6 @@ import './FeatureGrid.css'
 interface FeatureItem {
   id: string
   icon: React.ComponentType<{ size?: number; weight?: string; color?: string }>
-  metric?: string
   title: string
   body: string
   gradient: string
@@ -29,51 +28,50 @@ const features: FeatureItem[] = [
   {
     id: 'latency',
     icon: Gauge,
-    metric: '2ms',
     title: 'Low Latency',
     body: 'Sub-2ms median response overhead. Edge routing brings models closer to your users.',
-    gradient: 'linear-gradient(145deg, #7C3AED, #08080F)',
-    borderColor: '#7C3AED',
+    gradient: 'linear-gradient(145deg, #5B21B6, #08080F)',
+    borderColor: '#5B21B6',
   },
   {
     id: 'integration',
     icon: Plug,
     title: 'Easy Integration',
     body: 'Drop in one line. OpenAI SDK compatible out of the box.',
-    gradient: 'linear-gradient(145deg, #3B82F6, #08080F)',
-    borderColor: '#3B82F6',
+    gradient: 'linear-gradient(145deg, #1E40AF, #08080F)',
+    borderColor: '#1E40AF',
   },
   {
     id: 'cost',
     icon: CurrencyDollar,
     title: 'Cost Effective',
     body: 'Up to 10x cheaper than major providers.',
-    gradient: 'linear-gradient(145deg, #10B981, #08080F)',
-    borderColor: '#10B981',
+    gradient: 'linear-gradient(145deg, #047857, #08080F)',
+    borderColor: '#047857',
   },
   {
     id: 'secure',
     icon: ShieldCheck,
     title: 'Secure',
     body: 'End-to-end encrypted. No training on your data. SOC 2 ready.',
-    gradient: 'linear-gradient(145deg, #8B5CF6, #08080F)',
-    borderColor: '#8B5CF6',
+    gradient: 'linear-gradient(145deg, #6D28D9, #08080F)',
+    borderColor: '#6D28D9',
   },
   {
     id: 'deployment',
     icon: Rocket,
     title: 'Fast Deployment',
     body: 'Ship to production in minutes. No infra to manage.',
-    gradient: 'linear-gradient(145deg, #F59E0B, #08080F)',
-    borderColor: '#F59E0B',
+    gradient: 'linear-gradient(145deg, #B45309, #08080F)',
+    borderColor: '#B45309',
   },
   {
     id: 'analytics',
     icon: ChartBar,
     title: 'Analytics',
     body: 'Token usage, latency breakdowns, and cost tracking in real time.',
-    gradient: 'linear-gradient(145deg, #06B6D4, #08080F)',
-    borderColor: '#06B6D4',
+    gradient: 'linear-gradient(145deg, #0E7490, #08080F)',
+    borderColor: '#0E7490',
   },
 ]
 
@@ -157,17 +155,9 @@ export default function FeatureGrid() {
               } as React.CSSProperties
             }
           >
-            {/* Hero metric card */}
-            {f.metric ? (
-              <div className="feature-icon-wrapper">
-                <Icon size={28} weight="light" color="#C4B5FD" />
-                <span className="feature-metric-badge">{f.metric}</span>
-              </div>
-            ) : (
-              <div className="feature-icon-wrapper">
-                {Icon && <Icon size={28} weight="light" color="#C4B5FD" />}
-              </div>
-            )}
+            <div className="feature-icon-wrapper">
+              <Icon size={28} weight="light" color="#C4B5FD" />
+            </div>
 
             <footer className="feature-info">
               <h3 className="feature-title">{f.title}</h3>

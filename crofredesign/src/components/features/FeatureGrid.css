@@ -90,15 +90,6 @@
   padding-bottom: 20px;
 }
 
-.feature-metric-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #A78BFA;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
 /* ---- Info footer ---- */
 
 .feature-info {
