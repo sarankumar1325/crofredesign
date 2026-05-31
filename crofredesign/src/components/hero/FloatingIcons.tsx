@@ -14,63 +14,56 @@ import ZAI from '@lobehub/icons/es/ZAI'
 const labs: Array<{
   name: string
   Icon: ComponentType<{ size?: number }>
-  duration: number
-  floatOffset: [number, number]  // [start, end] for y float
   rotate: number                  // static tilt in degrees
   style: CSSProperties
   isMono?: boolean
+  dropHeight: number              // how far above to start the fall (px)
 }> = [
   // LEFT SIDE
   {
     name: 'DeepSeek',
     Icon: DeepSeek.Color,
-    duration: 6.2,
-    floatOffset: [-10, 7],
     rotate: -8,
     style: { top: '16%', left: '7%' },
+    dropHeight: 180,
   },
   {
     name: 'Qwen',
     Icon: Qwen.Color,
-    duration: 8.8,
-    floatOffset: [-6, 10],
     rotate: 6,
     style: { top: '48%', left: '3%' },
+    dropHeight: 260,
   },
   {
     name: 'Minimax',
     Icon: Minimax.Color,
-    duration: 7.1,
-    floatOffset: [-12, 5],
     rotate: -4,
     style: { bottom: '16%', left: '8%' },
+    dropHeight: 400,
   },
 
   // RIGHT SIDE
   {
     name: 'Kimi',
     Icon: Kimi.Color,
-    duration: 7.4,
-    floatOffset: [-8, 9],
     rotate: 7,
     style: { top: '13%', right: '4%' },
+    dropHeight: 200,
   },
   {
     name: 'Gemma',
     Icon: Gemma.Color,
-    duration: 9.2,
-    floatOffset: [-5, 11],
     rotate: -6,
     style: { top: '44%', right: '8%' },
+    dropHeight: 300,
   },
   {
     name: 'ZAI',
     Icon: ZAI,
-    duration: 6.8,
-    floatOffset: [-9, 6],
     rotate: 5,
     style: { bottom: '18%', right: '4%' },
     isMono: true,
+    dropHeight: 450,
   },
 ]
 
@@ -85,26 +78,29 @@ export default function FloatingIcons() {
     [],
   )
 
-  /* ---- GSAP continuous float (y-axis) ---- */
+  /* ---- GSAP drop-in from above ---- */
   useEffect(() => {
     if (prefersReduced) return
 
-    const anims = labs.map((lab, i) => {
+    const tl = gsap.timeline()
+
+    labs.forEach((lab, i) => {
       const el = iconRefs.current[i]
-      if (!el) return null
+      if (!el) return
 
-      gsap.set(el, { y: lab.floatOffset[0] })
+      // Start hidden above
+      gsap.set(el, { y: -lab.dropHeight, opacity: 0 })
 
-      return gsap.to(el, {
-        y: lab.floatOffset[1],
-        duration: lab.duration,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-      })
+      // Drop into position with overshoot bounce
+      tl.to(el, {
+        y: 0,
+        opacity: 1,
+        duration: 0.4,
+        ease: 'back.out(1.7)',
+      }, i * 0.08)
     })
 
-    return () => anims.forEach((a) => a?.kill())
+    return () => tl.kill()
   }, [prefersReduced])
 
   /* ---- GSAP mouse parallax (x-axis) ---- */

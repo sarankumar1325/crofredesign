@@ -1,10 +1,59 @@
-import { motion } from 'motion/react'
+'use client'
+import { useEffect, useRef } from 'react'
+import { useReducedMotion } from 'motion/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import CodeTabs from './CodeTabs'
 
+gsap.registerPlugin(ScrollTrigger)
+
 export default function CodeSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const labelRef = useRef<HTMLParagraphElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const descRef = useRef<HTMLParagraphElement>(null)
+  const codeRef = useRef<HTMLDivElement>(null)
+  const prefersReduced = useReducedMotion()
+
+  useEffect(() => {
+    if (prefersReduced) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      })
+
+      // Left column text — rise from below
+      tl.from([labelRef.current, headingRef.current, descRef.current], {
+        y: 80,
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.15,
+        ease: 'power3.out',
+      })
+
+      // Right column code panel — slides up slightly later
+      if (codeRef.current) {
+        tl.from(codeRef.current, {
+          y: 60,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+        }, '-=0.3')
+      }
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [prefersReduced])
+
   return (
     <section
       id="docs"
+      ref={sectionRef}
       style={{
         backgroundColor: '#0F0F1A',
         borderTop: '1px solid rgba(124,58,237,0.18)',
@@ -24,13 +73,9 @@ export default function CodeSection() {
         className="code-grid"
       >
         {/* Left column — text */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          viewport={{ once: true, amount: 0.3 }}
-        >
+        <div>
           <p
+            ref={labelRef}
             style={{
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: '10px',
@@ -43,6 +88,7 @@ export default function CodeSection() {
             MINUTES TO YOUR FIRST CALL
           </p>
           <h2
+            ref={headingRef}
             style={{
               fontFamily: 'Satoshi, Geist, sans-serif',
               fontWeight: 700,
@@ -58,6 +104,7 @@ export default function CodeSection() {
             Start shipping.
           </h2>
           <p
+            ref={descRef}
             style={{
               fontFamily: 'DM Sans, sans-serif',
               fontSize: '0.9375rem',
@@ -69,17 +116,12 @@ export default function CodeSection() {
           >
             OpenAI-compatible. Bring your key. Python or JavaScript. No new SDK, no config.
           </p>
-        </motion.div>
+        </div>
 
         {/* Right column — Code editor */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-          viewport={{ once: true, amount: 0.3 }}
-        >
+        <div ref={codeRef}>
           <CodeTabs />
-        </motion.div>
+        </div>
       </div>
 
       <style>{`
