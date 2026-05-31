@@ -167,9 +167,12 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.6, stiffness: 120, damping: 20, type: 'spring' }}
+          initial="hidden"
+          animate={headlineInView ? 'visible' : 'hidden'}
+          variants={{
+            visible: { transition: { staggerChildren: 0.05, delayChildren: 0.4 } },
+            hidden: {},
+          }}
           style={{
             fontFamily: 'Satoshi, Geist, sans-serif',
             fontSize: '1.125rem',
@@ -180,7 +183,21 @@ export default function Hero() {
             margin: '0 auto 40px',
           }}
         >
-          Access the best OSS models at the lowest prices on the market. Python-first, OpenAI-compatible API.
+          {'Access the best OSS models at the lowest prices on the market. Python-first, OpenAI-compatible API.'
+            .split(' ')
+            .map((word, i) => (
+              <motion.span
+                key={i}
+                style={{ display: 'inline-block' }}
+                variants={{
+                  hidden: { filter: 'blur(6px)', opacity: 0, y: 10 },
+                  visible: { filter: 'blur(0px)', opacity: 1, y: 0 },
+                }}
+                transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                {word}{'\u00A0'}
+              </motion.span>
+            ))}
         </motion.p>
 
         <motion.div

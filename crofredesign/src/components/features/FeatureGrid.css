@@ -1,0 +1,124 @@
+/* ================================================================== */
+/*  FeatureGrid — dark feature cards with silver/purple hover glow    */
+/* ================================================================== */
+
+/* ---- Grid container ---- */
+
+.feature-grid {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Card ---- */
+
+.feature-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #08080F;
+  padding: 28px;
+  min-height: 210px;
+  cursor: default;
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+.feature-card:hover {
+  border-color: rgba(124, 58, 237, 0.45);
+  box-shadow:
+    0 0 24px rgba(124, 58, 237, 0.10),
+    0 0 60px rgba(124, 58, 237, 0.04);
+}
+
+/* Silver/purple cursor spotlight */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(192, 132, 252, 0.20) 0%,
+    rgba(255, 255, 255, 0.06) 35%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+/* ---- Icon area ---- */
+
+.feature-icon-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: auto;
+  padding-bottom: 20px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.feature-card:hover .feature-icon-wrapper {
+  transform: translateX(120px) scale(1.18);
+}
+
+/* Brighten icon color on hover */
+.feature-card:hover .feature-icon-wrapper svg {
+  filter: brightness(1.4);
+  transition: filter 0.35s ease;
+}
+
+/* ---- Info footer ---- */
+
+.feature-info {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+}
+
+.feature-title {
+  font-family: 'Satoshi', 'Geist', sans-serif;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  color: #F5F3FF;
+  margin: 0 0 8px;
+}
+
+.feature-body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.55;
+}
