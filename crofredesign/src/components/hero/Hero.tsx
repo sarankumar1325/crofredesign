@@ -17,6 +17,34 @@ const BLUR_TRANSITION = {
   ease: [0.25, 0.46, 0.45, 0.94],
 }
 
+/* ---- BlurWord sub-component (defined outside parent to avoid remounts) ---- */
+function BlurWord({
+  children,
+  delay,
+  inView,
+  reduced,
+}: {
+  children: React.ReactNode
+  delay: number
+  inView: boolean
+  reduced: boolean
+}) {
+  if (reduced) {
+    return <span className="blur-word">{children}</span>
+  }
+
+  return (
+    <motion.span
+      className="blur-word"
+      initial={BLUR_FROM}
+      animate={inView ? BLUR_TO : BLUR_FROM}
+      transition={{ ...BLUR_TRANSITION, delay }}
+    >
+      {children}
+    </motion.span>
+  )
+}
+
 export default function Hero() {
   const glowRef = useRef<HTMLDivElement>(null)
   const headlineRef = useRef<HTMLHeadingElement>(null)
@@ -38,24 +66,6 @@ export default function Hero() {
 
     return () => pulse.kill()
   }, [prefersReduced])
-
-  /* ---- Helper: renders a blur-animated word ---- */
-  const BlurWord = ({ children, delay }: { children: React.ReactNode; delay: number }) => {
-    if (prefersReduced) {
-      return <span className="blur-word">{children}</span>
-    }
-
-    return (
-      <motion.span
-        className="blur-word"
-        initial={BLUR_FROM}
-        animate={headlineInView ? BLUR_TO : BLUR_FROM}
-        transition={{ ...BLUR_TRANSITION, delay }}
-      >
-        {children}
-      </motion.span>
-    )
-  }
 
   return (
     <section
@@ -135,27 +145,24 @@ export default function Hero() {
             margin: '0 0 72px',
           }}
         >
-          <span style={{ display: 'inline-block' }}>
-            <BlurWord delay={0}>Powerful</BlurWord>
-            {' '}
-            <BlurWord delay={0.2}>Models.</BlurWord>
-          </span>
+          <BlurWord delay={0} inView={headlineInView} reduced={prefersReduced}>Powerful</BlurWord>
+          {' '}
+          <BlurWord delay={0.2} inView={headlineInView} reduced={prefersReduced}>Models.</BlurWord>
           <br />
           <span
             style={{
-              display: 'inline-block',
               background: 'linear-gradient(135deg, #C4B5FD, #A78BFA, #9333EA)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}
           >
-            <BlurWord delay={0.4}>Crazy</BlurWord>
+            <BlurWord delay={0.4} inView={headlineInView} reduced={prefersReduced}>Crazy</BlurWord>
             {' '}
-            <BlurWord delay={0.6}>Cheap</BlurWord>
+            <BlurWord delay={0.6} inView={headlineInView} reduced={prefersReduced}>Cheap</BlurWord>
           </span>
           {' '}
-          <BlurWord delay={0.8}>Pricing.</BlurWord>
+          <BlurWord delay={0.8} inView={headlineInView} reduced={prefersReduced}>Pricing.</BlurWord>
         </motion.h1>
 
         <motion.p
